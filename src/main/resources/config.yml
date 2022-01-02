@@ -1,0 +1,34 @@
+# PluginDownloader
+# Created by CyberedCake for CyberNet
+#
+# This plugin automatically downloads and updates plugins based off a specified directory
+
+baseDirectory: 'C:\Users\oeroo\Desktop\MinecraftServers\Plugins'
+# The directory where the plugin should attempt to get all the plugin files
+# from... please note this must be an absolute file path
+# ex: C:\Users\*user*\Desktop\MinecraftServers\plugins-to-download\
+
+onlyCopyJarFiles: false
+# Determines if the plugin should only copy files with ending '.jar' to the plugins
+# folder. This is in case you have folders you would not like to copy in the base
+# directory.
+
+autoRestart: true
+# If the plugin should automatically restart the server after installing and updating
+# all the plugins. This is a safer way to load plugins than attempting to load
+# plugins after the server restarts and instead letting Bukkit do the work natively.
+
+autoUpdate: true
+# Check for updates in your plugins upon the server starting. If the plugin fines a
+# plugin needs to be updated, it will replace the jar file and then immediately load
+# it (or restart if autoRestart is true)
+
+disableAfterOperation: true
+# If the plugin should disable itself and unregister itself if no plugin(s) need to be
+# updated. This is recommended so if the server reloads it doesn't break the server.
+
+updateNotifications: true
+# Give operators notifications if the plugin is in need of updating to a needed version.
+
+configVersion: 1.0.0
+# Do not change this value.

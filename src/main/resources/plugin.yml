@@ -1,0 +1,6 @@
+name: PluginDownloader
+version: 1.0.0
+main: net.cybercake.plugindownloader.Main
+api-version: 1.18
+authors: [ CyberNetTeam ]
+prefix: PluginDownloader
