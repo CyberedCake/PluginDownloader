@@ -16,7 +16,7 @@ onlyCopyJarFiles: false
 autoRestart: true
 # If the plugin should automatically restart the server after installing and updating
 # all the plugins. This is a safer way to load plugins than attempting to load
-# plugins after the server restarts and instead letting Bukkit do the work natively.
+# plugins after the server restarts and instead letting Bukkit do the work itself.
 
 autoUpdate: true
 # Check for updates in your plugins upon the server starting. If the plugin fines a

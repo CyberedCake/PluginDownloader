@@ -1,5 +1,6 @@
 package net.cybercake.plugindownloader;
 
+import net.cybercake.cyberapi.BetterStackTraces;
 import net.cybercake.cyberapi.CyberAPI;
 import net.cybercake.cyberapi.Log;
 import net.cybercake.cyberapi.Time;
@@ -7,7 +8,9 @@ import net.cybercake.cyberapi.instances.Spigot;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.plugin.Plugin;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -57,34 +60,54 @@ public final class Main extends Spigot {
             if((!getConfig().getBoolean("onlyCopyJarFiles")) ||
                     (getConfig().getBoolean("onlyCopyJarFiles") && file.getName().endsWith(".jar"))) {
 
+                File pluginFileAssociated = null;
                 for(File plFile : pluginsDirectory.listFiles()) {
-                    //
-                    //
-                    //
-                    //
-                    // NEED TO DO
-                    //
-                    //
-                    //
-                    //
+                    if(!plFile.isFile()) continue;
+                    if(!plFile.getName().split("(-|_| )")[0].startsWith(file.getName())) continue;
+                    pluginFileAssociated = plFile;
+                }
+                if(file.isFile() && pluginFileAssociated == null) {
+                    Log.error("Plugin file associated is 'null', file associated getName(): " + file.getName());
+                    try {
+                        FileUtils.copyFile(file, new File(pluginsDirectory + File.separator + file.getName().substring(0, file.getName().length()-4) + "-auto.jar"));
+                    } catch (IOException e) {
+                        BetterStackTraces.print(e);
+                    }
+                    continue;
+                }
+                if(pluginFileAssociated != null && file.lastModified() == pluginFileAssociated.lastModified()) {
+                    Log.error("Last modified of (new) already matches one of (old)");
+                    continue;
                 }
 
                 try {
-                    if(!file.isDirectory()) FileUtils.copyFile(file, new File(pluginsDirectory + File.separator + file.getName().substring(0, file.getName().length()-4) + "-auto.jar"));
+                    if(Bukkit.getPluginManager().getPlugins().length != 1){
+                        for(Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+                            Bukkit.getPluginManager().disablePlugin(plugin);
+                        }
+                    }
+
+                    // if file is not a directory then copy the file
+                    if(!file.isDirectory())
+                        FileUtils.copyFile(file, new File(pluginsDirectory + File.separator + file.getName().substring(0, file.getName().length()-4) + "-auto.jar"));
+
+                    // if file is a directory then copy its contents and add a file inside to mark
                     if(file.isDirectory()) {
                         File dir = new File(pluginsDirectory + File.separator + file.getName());
                         FileUtils.copyDirectory(file, dir);
 
-                        File newFile = new File(dir.getAbsolutePath() + File.separator + "Updated by " + getDescription().getName() + " (DO NOT REMOVE)");
+                        String path = dir.getAbsolutePath() + File.separator + "Updated by " + getDescription().getName() + " (DO NOT REMOVE)";
+                        File newFile = new File(path);
+                        newFile.delete();
                         newFile.createNewFile();
-                        FileWriter writer = new FileWriter(newFile);
+                        BufferedWriter writer = new BufferedWriter(new FileWriter(newFile));
                         writer.write("(lastmodified=" + Time.getUnix() + ",id=" + UUID.randomUUID() + ")");
                         writer.close();
                     }
 
                     Log.info(
                             ChatColor.GOLD + "Updated " + file.getName() + " to new file! " +
-                                    ChatColor.RED + "[Old Last Modified: " + plugins.get(index).lastModified() + "] " +
+                                    ChatColor.RED + "[Old Last Modified: " + (pluginFileAssociated == null ? "Never Set" : pluginFileAssociated.lastModified()) + "] " +
                                     ChatColor.GREEN + "[New Last Modified: " + file.lastModified() + "]"
                     );
                 } catch (IOException exception) {
